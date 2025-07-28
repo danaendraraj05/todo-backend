@@ -5,6 +5,7 @@ from app.models import Project
 from .serializers import ProjectSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from .permissions import IsProjectMember
 
 # Create
 class ProjectCreateView(APIView):
@@ -18,7 +19,7 @@ class ProjectCreateView(APIView):
 
 # List
 class ProjectListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProjectMember ]
     def get(self, request):
         projects = Project.objects.all()
         serializer = ProjectSerializer(projects, many=True)
@@ -26,7 +27,7 @@ class ProjectListView(APIView):
 
 # Retrieve
 class ProjectDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProjectMember]
     def get(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
         serializer = ProjectSerializer(project)
@@ -34,7 +35,7 @@ class ProjectDetailView(APIView):
 
 # Update
 class ProjectUpdateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProjectMember]
     def put(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
         serializer = ProjectSerializer(project, data=request.data)
@@ -45,7 +46,7 @@ class ProjectUpdateView(APIView):
 
 # Delete
 class ProjectDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProjectMember]
     def delete(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
         project.delete()
