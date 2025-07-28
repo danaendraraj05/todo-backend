@@ -21,7 +21,7 @@ class TodoSerializer(serializers.ModelSerializer):
         model = Todo
         fields = '__all__'
 
-class TodoCommentSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
