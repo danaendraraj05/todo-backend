@@ -2,10 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from app.models import Project
-from .serializers import ProjectSerializer
+from app.serializers import ProjectSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsProjectMember
+from app.permissions import IsProjectMember
+from django.db.models import Q
 
 # Create
 class ProjectCreateView(APIView):
@@ -17,11 +18,14 @@ class ProjectCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# List
 class ProjectListView(APIView):
-    permission_classes = [IsAuthenticated, IsProjectMember ]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
-        projects = Project.objects.all()
+        user = request.user
+        projects = Project.objects.filter(
+            Q(created_by=user) | Q(assigned_users=user)
+        ).distinct()
+
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
 
